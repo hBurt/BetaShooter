@@ -1,0 +1,1 @@
+magick convert +repage layout_32x32.png -crop 32x32 tiles/tile_%d.png

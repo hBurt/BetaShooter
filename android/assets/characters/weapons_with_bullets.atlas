@@ -1,0 +1,125 @@
+
+weapons_with_bullets.png
+size: 94,94
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+bullet_blue
+  rotate: false
+  xy: 29, 8
+  size: 22, 14
+  orig: 22, 14
+  offset: 0, 0
+  index: -1
+bullet_blue_light
+  rotate: false
+  xy: 53, 22
+  size: 16, 7
+  orig: 16, 7
+  offset: 0, 0
+  index: -1
+bullet_green
+  rotate: false
+  xy: 56, 31
+  size: 16, 8
+  orig: 16, 8
+  offset: 0, 0
+  index: -1
+bullet_orange
+  rotate: false
+  xy: 2, 5
+  size: 22, 14
+  orig: 22, 14
+  offset: 0, 0
+  index: -1
+bullet_pink
+  rotate: false
+  xy: 80, 61
+  size: 12, 12
+  orig: 12, 12
+  offset: 0, 0
+  index: -1
+bullet_purple
+  rotate: false
+  xy: 56, 41
+  size: 22, 14
+  orig: 22, 14
+  offset: 0, 0
+  index: -1
+bullet_red
+  rotate: false
+  xy: 56, 57
+  size: 22, 16
+  orig: 22, 16
+  offset: 0, 0
+  index: -1
+bullet_yellow
+  rotate: false
+  xy: 29, 24
+  size: 22, 14
+  orig: 22, 14
+  offset: 0, 0
+  index: -1
+bullet_yellow_dark
+  rotate: false
+  xy: 80, 47
+  size: 12, 12
+  orig: 12, 12
+  offset: 0, 0
+  index: -1
+weapon_d-0
+  rotate: false
+  xy: 56, 75
+  size: 25, 17
+  orig: 25, 17
+  offset: 0, 0
+  index: -1
+weapon_d-1
+  rotate: false
+  xy: 2, 75
+  size: 25, 17
+  orig: 25, 17
+  offset: 0, 0
+  index: -1
+weapon_d-2
+  rotate: false
+  xy: 2, 56
+  size: 25, 17
+  orig: 25, 17
+  offset: 0, 0
+  index: -1
+weapon_d-3
+  rotate: false
+  xy: 29, 75
+  size: 25, 17
+  orig: 25, 17
+  offset: 0, 0
+  index: -1
+weapon_d-4
+  rotate: false
+  xy: 2, 37
+  size: 25, 17
+  orig: 25, 17
+  offset: 0, 0
+  index: -1
+weapon_d-5
+  rotate: false
+  xy: 29, 56
+  size: 25, 17
+  orig: 25, 17
+  offset: 0, 0
+  index: -1
+weapon_d-6
+  rotate: false
+  xy: 2, 21
+  size: 25, 14
+  orig: 25, 14
+  offset: 0, 0
+  index: -1
+weapon_d-7
+  rotate: false
+  xy: 29, 40
+  size: 25, 14
+  orig: 25, 14
+  offset: 0, 0
+  index: -1

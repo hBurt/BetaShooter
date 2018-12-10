@@ -1,0 +1,160 @@
+
+player_and_enemies.png
+size: 200,46
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+enemy_d-0
+  rotate: false
+  xy: 74, 24
+  size: 16, 20
+  orig: 16, 20
+  offset: 0, 0
+  index: -1
+enemy_d-1
+  rotate: false
+  xy: 2, 2
+  size: 16, 20
+  orig: 16, 20
+  offset: 0, 0
+  index: -1
+enemy_d-10
+  rotate: false
+  xy: 74, 2
+  size: 16, 20
+  orig: 16, 20
+  offset: 0, 0
+  index: -1
+enemy_d-11
+  rotate: false
+  xy: 2, 24
+  size: 16, 20
+  orig: 16, 20
+  offset: 0, 0
+  index: -1
+enemy_d-2
+  rotate: false
+  xy: 20, 24
+  size: 16, 20
+  orig: 16, 20
+  offset: 0, 0
+  index: -1
+enemy_d-3
+  rotate: false
+  xy: 20, 2
+  size: 16, 20
+  orig: 16, 20
+  offset: 0, 0
+  index: -1
+enemy_d-6
+  rotate: false
+  xy: 38, 24
+  size: 16, 20
+  orig: 16, 20
+  offset: 0, 0
+  index: -1
+enemy_d-7
+  rotate: false
+  xy: 38, 2
+  size: 16, 20
+  orig: 16, 20
+  offset: 0, 0
+  index: -1
+enemy_d-8
+  rotate: false
+  xy: 56, 24
+  size: 16, 20
+  orig: 16, 20
+  offset: 0, 0
+  index: -1
+enemy_d-9
+  rotate: false
+  xy: 56, 2
+  size: 16, 20
+  orig: 16, 20
+  offset: 0, 0
+  index: -1
+ppd-0
+  rotate: false
+  xy: 92, 27
+  size: 16, 17
+  orig: 16, 17
+  offset: 0, 0
+  index: -1
+ppd-1
+  rotate: false
+  xy: 92, 8
+  size: 16, 17
+  orig: 16, 17
+  offset: 0, 0
+  index: -1
+ppd-12
+  rotate: false
+  xy: 146, 27
+  size: 16, 17
+  orig: 16, 17
+  offset: 0, 0
+  index: -1
+ppd-13
+  rotate: false
+  xy: 146, 8
+  size: 16, 17
+  orig: 16, 17
+  offset: 0, 0
+  index: -1
+ppd-14
+  rotate: false
+  xy: 164, 27
+  size: 16, 17
+  orig: 16, 17
+  offset: 0, 0
+  index: -1
+ppd-15
+  rotate: false
+  xy: 164, 8
+  size: 16, 17
+  orig: 16, 17
+  offset: 0, 0
+  index: -1
+ppd-16
+  rotate: false
+  xy: 182, 27
+  size: 16, 17
+  orig: 16, 17
+  offset: 0, 0
+  index: -1
+ppd-17
+  rotate: false
+  xy: 182, 8
+  size: 16, 17
+  orig: 16, 17
+  offset: 0, 0
+  index: -1
+ppd-6
+  rotate: false
+  xy: 110, 27
+  size: 16, 17
+  orig: 16, 17
+  offset: 0, 0
+  index: -1
+ppd-7
+  rotate: false
+  xy: 110, 8
+  size: 16, 17
+  orig: 16, 17
+  offset: 0, 0
+  index: -1
+ppd-8
+  rotate: false
+  xy: 128, 27
+  size: 16, 17
+  orig: 16, 17
+  offset: 0, 0
+  index: -1
+ppd-9
+  rotate: false
+  xy: 128, 8
+  size: 16, 17
+  orig: 16, 17
+  offset: 0, 0
+  index: -1
