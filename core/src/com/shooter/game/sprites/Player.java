@@ -1,44 +1,69 @@
 package com.shooter.game.sprites;
 
-import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.shooter.game.BetaShooter;
+import com.shooter.game.sprites.util.Bullet;
+import com.shooter.game.sprites.util.PhysicsActor;
+import com.shooter.game.sprites.util.Weapon;
 
 /**
  * Created by: Harrison on 08 Dec 2018
  */
-public class Player extends Sprite implements Disposable {
+public class Player extends PhysicsActor {
 
+    //Instance of our game
     private BetaShooter game;
 
-    public enum State { FALLING, JUMPING, STANDING, RUNNING };
+    //Create the states for out players animation
+    public enum State { FALLING, JUMPING, STANDING, RUNNING }
+    public enum WeaponType {SHOTGUN, ASSULT_RIFLE, SNIPER, GUN_4, GUN_5, GUN_6, GUN_7, GUN_8 }
+
+    //Initiate states
     public State currentState;
     public State previousState;
+
+    public WeaponType weaponType;
+    public Weapon weapon;
+    public Array<Bullet> bullet;
+
+    //Box2d Init
     public World world;
     public Body b2Body;
     private BodyDef bdef;
+    private CircleShape shape;
+    private PolygonShape polygonShape;
 
+    //Textures / anims
     private TextureAtlas playerAndEnemies;
+    private TextureAtlas weaponsWithBullets;
+
+    private TextureRegion weaponTexture;
+    private TextureRegionDrawable weaponDrawable;
+    private int weaponUnitHolderPosition;
 
     private Animation<TextureRegion> playerRun;
     private Animation<TextureRegion> playerJump;
     private TextureRegion playerStand;
+    private TextureRegionDrawable healthBarDraw;
+    private TextureRegionDrawable healthBarBorder;
     private float stateTimer;
+
     private boolean runningRight;
 
 
-    CircleShape shape;
 
+    //Player Attributes
+    private Vector2 position = new Vector2(3, 4);
 
-    private Vector2 position = new Vector2(7, 5);
-
+    private float health;
     public Player(World world, BetaShooter game) {
+        super(world);
         this.world = world;
         this.game = game;
         currentState = State.STANDING;
@@ -70,7 +95,7 @@ public class Player extends Sprite implements Disposable {
         frames.add(playerAndEnemies.findRegion("ppd-6"));
         frames.add(playerAndEnemies.findRegion("ppd-7"));
 
-        //Set the run animationto the frames from our array
+        //Set the run animation the frames from our array
         playerJump = new Animation<TextureRegion>(0.1f, frames);
 
         //Clear the array
@@ -79,29 +104,88 @@ public class Player extends Sprite implements Disposable {
         playerStand = playerAndEnemies.findRegion("ppd-0");
         /******End Player Animation*******/
 
-        definePLayer();
+        getPlayerBody(3, 4, 15);
+        b2Body = super.b2body;
+        b2Body.setUserData(this);
 
         setBounds(0,0,32 / BetaShooter.PPM, 32 / BetaShooter.PPM);
         setRegion(playerStand);
+
+        //Health Bar
+        healthBarDraw = new TextureRegionDrawable(playerAndEnemies.findRegion("healthBar"));
+        healthBarBorder = new TextureRegionDrawable(playerAndEnemies.findRegion("healthBarBorder"));
+        health = 100;
+
+        //Weapons
+
+        //Load the atlas to get the textures
+        weaponsWithBullets = game.getAsm().get("characters/weapons_with_bullets.atlas", TextureAtlas.class);
+
+        //Set weapon type
+        weaponType = WeaponType.ASSULT_RIFLE;
+
+        //Do the weapon logic
+        applyWeaponType(weaponType);
+        weaponUnitHolderPosition = weapon.getRightX();
+        bullet = new Array<Bullet>();
+    }
+    public void applyWeaponType(WeaponType weaponType) {
+        if (weaponType == WeaponType.SHOTGUN) {
+            weaponTexture = weaponsWithBullets.findRegion("weapon_d-0");
+            weapon = new Weapon(weaponType, 18, 7, 15, 25, 17);
+        } else if (weaponType == WeaponType.ASSULT_RIFLE) {
+            weaponTexture = weaponsWithBullets.findRegion("weapon_d-2");
+            weapon = new Weapon(weaponType, 18, 7, 15, 25, 17);
+        } else if (weaponType == WeaponType.SNIPER) {
+            weaponTexture = weaponsWithBullets.findRegion("weapon_d-5");
+            weapon = new Weapon(weaponType, 18, 7, 15, 25, 17);
+        }
+        weaponDrawable = new TextureRegionDrawable(weaponTexture);
+
     }
 
-    public void definePLayer(){
-        bdef = new BodyDef();
-        bdef.position.set((position.x * 32) / BetaShooter.PPM, (position.y * 32) / BetaShooter.PPM);
-        bdef.type = BodyDef.BodyType.DynamicBody;
-        b2Body = world.createBody(bdef);
-
-        FixtureDef fdef = new FixtureDef();
-        shape = new CircleShape();
-        shape.setRadius(15f / BetaShooter.PPM);
-
-        fdef.shape = shape;
-        b2Body.createFixture(fdef);
+    public void createNewBullet(float x, float y, String direction){
+        bullet.add(new Bullet(game, world, this, weaponType, x, y, direction));
     }
 
     public void update(float delta){
         setPosition(b2Body.getPosition().x - getWidth() / 2, b2Body.getPosition().y - getHeight() / 2);
         setRegion(getFrame(delta));
+        if( bullet != null) {
+            for (Bullet b: bullet) {
+                b.update();
+            }
+        }
+    }
+
+    public void render(float delta, SpriteBatch batch){
+        int avg = (int) (0.32f * health);
+        healthBarDraw.getRegion().setRegionWidth(avg);
+
+        if(bullet != null){
+            for (Bullet b: bullet) {
+                b.render(batch);
+            }
+        }
+        batch.begin();
+        draw(batch);
+        healthBarDraw.draw(batch,
+                b2Body.getPosition().x - 16 / BetaShooter.PPM ,
+                b2Body.getPosition().y + 20 / BetaShooter.PPM,
+                healthBarDraw.getRegion().getRegionWidth() / BetaShooter.PPM, 4 / BetaShooter.PPM);
+
+        healthBarBorder.draw(batch,
+                b2Body.getPosition().x - 16 / BetaShooter.PPM ,
+                b2Body.getPosition().y + 20 / BetaShooter.PPM,
+                32 / BetaShooter.PPM, 4 / BetaShooter.PPM);
+
+        //Weapon Stuff
+        weaponDrawable.draw(batch,
+                b2Body.getPosition().x - weaponUnitHolderPosition / BetaShooter.PPM,
+                b2Body.getPosition().y - weapon.getY() / BetaShooter.PPM,
+                weapon.getWidth() / BetaShooter.PPM, weapon.getHeight() / BetaShooter.PPM);
+
+        batch.end();
     }
 
     public TextureRegion getFrame(float delta){
@@ -122,11 +206,19 @@ public class Player extends Sprite implements Disposable {
                 break;
         }
 
-        if((b2Body.getLinearVelocity().x < 0 || !runningRight) && !region.isFlipX()){
+        if((b2Body.getLinearVelocity().x < 0 || !runningRight) && !region.isFlipX()){ //left
             region.flip(true, false);
+            if(!weaponDrawable.getRegion().isFlipX()) {
+                weaponUnitHolderPosition = weapon.getLeftX();
+                weaponDrawable.getRegion().flip(true, false);
+            }
             runningRight = false;
         } else if((b2Body.getLinearVelocity().x > 0 || runningRight) && region.isFlipX()){
             region.flip(true,false);
+            if(weaponDrawable.getRegion().isFlipX()) {
+                weaponUnitHolderPosition = weapon.getRightX();
+                weaponDrawable.getRegion().flip(true, false);
+            }
             runningRight = true;
         }
 
@@ -149,8 +241,22 @@ public class Player extends Sprite implements Disposable {
 
     }
 
+    public void handleCollision(PhysicsActor actor){
+
+    }
+
     @Override
     public void dispose() {
         shape.dispose();
+        world.dispose();
+    }
+
+    public Vector2 getPositionCenter() {
+        return new Vector2(getX() + 0.5f, getY() + 0.5f);
+    }
+
+
+    public boolean isRunningRight() {
+        return runningRight;
     }
 }

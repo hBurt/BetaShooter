@@ -74,6 +74,20 @@ enemy_d-9
   orig: 16, 20
   offset: 0, 0
   index: -1
+healthBar
+  rotate: false
+  xy: 126, 2
+  size: 32, 4
+  orig: 32, 4
+  offset: 0, 0
+  index: -1
+healthBarBorder
+  rotate: false
+  xy: 92, 2
+  size: 32, 4
+  orig: 32, 4
+  offset: 0, 0
+  index: -1
 ppd-0
   rotate: false
   xy: 92, 27
@@ -111,14 +125,14 @@ ppd-14
   index: -1
 ppd-15
   rotate: false
-  xy: 164, 8
+  xy: 182, 27
   size: 16, 17
   orig: 16, 17
   offset: 0, 0
   index: -1
 ppd-16
   rotate: false
-  xy: 182, 27
+  xy: 164, 8
   size: 16, 17
   orig: 16, 17
   offset: 0, 0

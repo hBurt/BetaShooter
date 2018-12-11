@@ -12,11 +12,6 @@ import com.shooter.game.sprites.Brick;
  */
 public class B2WorldCreator {
     public B2WorldCreator(TiledMap map, World world) {
-        BodyDef bdef = new BodyDef();
-        PolygonShape shape = new PolygonShape();
-        FixtureDef fdef = new FixtureDef();
-        Body body;
-
         //Ground objects
         for(MapObject object : map.getLayers().get(2).getObjects().getByType(RectangleMapObject.class)){
             Rectangle rect = ((RectangleMapObject) object).getRectangle();
