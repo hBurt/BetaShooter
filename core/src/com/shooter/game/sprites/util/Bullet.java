@@ -1,15 +1,10 @@
 package com.shooter.game.sprites.util;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.utils.Base64Coder;
-import com.badlogic.gdx.utils.Disposable;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.World;
 import com.shooter.game.BetaShooter;
 import com.shooter.game.sprites.Player;
 import com.shooter.game.sprites.Player.WeaponType;
@@ -31,12 +26,13 @@ public class Bullet extends PhysicsActor {
 
     public Bullet(BetaShooter game, World world, Player player, WeaponType weaponType, float x, float y, String direction) {
         super(world);
+
         this.game = game;
         this.world = world;
         this.player = player;
         this.weaponType = weaponType;
 
-        getBulletBody(x, y, 3f, direction);
+        b2body = getBulletBody(x, y, 3f, direction);
         b2body.setUserData(this);
 
         setBounds(0,0,6 / BetaShooter.PPM, 6 / BetaShooter.PPM);
@@ -47,9 +43,8 @@ public class Bullet extends PhysicsActor {
 
 
     public void handleCollision(PhysicsActor actor){
-        if(actor instanceof Player){
-            Gdx.app.log(this.getClass().getName(), "Bullet touched player");
-
+        if(actor instanceof Bullet){
+            setBodyAsDestroyable();
         }
 
     }
@@ -69,11 +64,14 @@ public class Bullet extends PhysicsActor {
     public void update(){
         //Sets the position of the TextureRegion relative to the bullets body
         setPosition(b2body.getPosition().x - getWidth() / 2, b2body.getPosition().y - getHeight() / 2);
-
     }
 
     @Override
     public void dispose() {
         world.dispose();
+    }
+
+    public Body getBody(){
+        return this.b2body;
     }
 }

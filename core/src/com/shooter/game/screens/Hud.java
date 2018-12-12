@@ -17,7 +17,6 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.shooter.game.BetaShooter;
 import com.shooter.game.sprites.Player;
-import com.shooter.game.sprites.util.Bullet;
 
 /**
  * Created by: Harrison on 08 Dec 2018
@@ -163,8 +162,8 @@ public class Hud implements Disposable {
 
     public void update(Player player){
         scoreLBL.setText("FPS: " + Gdx.graphics.getFramesPerSecond() + "\nLRJF: " + pressLeft + pressRight + pressJump + pressFire);
-        if(player.bullet.size > 0){
-            bulletCount = player.bullet.size;
+        if(player.bullets.size > 0){
+            bulletCount = player.bullets.size;
             positionLBL.setText("X: " + player.b2Body.getPosition().x + " Y: " + player.b2Body.getPosition().y + "\n"
                 + "Bullet Count: " + bulletCount);
         } else {

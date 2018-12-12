@@ -7,16 +7,16 @@ public class Weapon {
     private WeaponType weaponType;
 
     private int leftX;
-
     private int rightX;
     private int y;
     private int width;
     private int height;
-    public Weapon(WeaponType weaponType, int leftX, int rightX, int y, int width, int height) {
+
+    public Weapon(WeaponType weaponType, int leftX, int rightX, int yPlacement, int width, int height) {
         this.weaponType = weaponType;
         this.leftX = leftX;
         this.rightX = rightX;
-        this.y = y;
+        this.y = yPlacement;
         this.width = width;
         this.height = height;
     }

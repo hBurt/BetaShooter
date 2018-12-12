@@ -1,13 +1,10 @@
 package com.shooter.game.screens;
 
-import box2dLight.ConeLight;
-import box2dLight.Light;
 import box2dLight.PointLight;
 import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -83,7 +80,7 @@ public class PlayScreen implements Screen {
 
         new B2WorldCreator(map, world);
 
-        player = new Player(world, game);
+        player = new Player(world, game, this);
 
         //ray = new RayHandler(world);
 
@@ -111,9 +108,9 @@ public class PlayScreen implements Screen {
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)){
             if(!player.isRunningRight()) {
-                player.createNewBullet(player.getPositionCenter().x - 0.6f, player.getPositionCenter().y, "left");
+                player.createNewBullet(player.getPositionCenter().x - 0.6f, player.getPositionCenter().y - 0.2f, "left");
             } else {
-                player.createNewBullet(player.getPositionCenter().x + 0.6f, player.getPositionCenter().y, "right");
+                player.createNewBullet(player.getPositionCenter().x +  0.6f, player.getPositionCenter().y - 0.2f, "right");
             }
         }
 
@@ -122,22 +119,22 @@ public class PlayScreen implements Screen {
         }
 
         if(hud.pressLeft){
-            if (player.b2Body.getLinearVelocity().x >= -3)
-                player.b2Body.applyLinearImpulse(new Vector2(-0.3f, 0), player.b2Body.getWorldCenter(), true);
+            if (player.b2Body.getLinearVelocity().x >= -9f)
+                player.b2Body.applyLinearImpulse(new Vector2(-0.9f, 0), player.b2Body.getWorldCenter(), true);
         }
         if(hud.pressRight){
-            if (player.b2Body.getLinearVelocity().x <= 3)
-                player.b2Body.applyLinearImpulse(new Vector2(0.3f, 0), player.b2Body.getWorldCenter(), true);
+            if (player.b2Body.getLinearVelocity().x <= 9f)
+                player.b2Body.applyLinearImpulse(new Vector2(0.9f, 0), player.b2Body.getWorldCenter(), true);
         }
         if (hud.pressJump) { //up
-            if (player.b2Body.getLinearVelocity().y <= 3)
-                player.b2Body.applyLinearImpulse(new Vector2(0, 3f), player.b2Body.getWorldCenter(), true);
+            if (player.b2Body.getLinearVelocity().y <= 9)
+                player.b2Body.applyLinearImpulse(new Vector2(0, 9f), player.b2Body.getWorldCenter(), true);
         }
         if(hud.pressFire){
             if(!player.isRunningRight()) {
-                player.createNewBullet(player.getPositionCenter().x - 0.6f, player.getPositionCenter().y, "left");
+                player.createNewBullet(player.getPositionCenter().x - 0.6f, player.getPositionCenter().y - 0.2f, "left");
             } else {
-                player.createNewBullet(player.getPositionCenter().x + 0.6f, player.getPositionCenter().y, "right");
+                player.createNewBullet(player.getPositionCenter().x + 0.6f, player.getPositionCenter().y - 0.2f, "right");
             }
         }
 
@@ -167,6 +164,9 @@ public class PlayScreen implements Screen {
 
         //Only render what's in the cameras view
         renderer.setView(gameCamera);
+
+        //Update our bullets array
+
     }
 
 
@@ -202,6 +202,16 @@ public class PlayScreen implements Screen {
 
         //Draw the hud
         hud.stage.draw();
+
+
+        if(player.bullets != null) {
+            for(int i = 0; i < player.bullets.size; i++){
+                if(player.bullets.get(i).isDestroyable()) {
+                    world.destroyBody(player.bullets.get(i).getBody());
+                    player.bullets.removeIndex(i);
+                }
+            }
+        }
     }
 
     public void createContactListener(){

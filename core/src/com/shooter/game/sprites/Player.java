@@ -1,13 +1,13 @@
 package com.shooter.game.sprites;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Disposable;
 import com.shooter.game.BetaShooter;
+import com.shooter.game.screens.PlayScreen;
 import com.shooter.game.sprites.util.Bullet;
 import com.shooter.game.sprites.util.PhysicsActor;
 import com.shooter.game.sprites.util.Weapon;
@@ -19,6 +19,7 @@ public class Player extends PhysicsActor {
 
     //Instance of our game
     private BetaShooter game;
+    private PlayScreen screen;
 
     //Create the states for out players animation
     public enum State { FALLING, JUMPING, STANDING, RUNNING }
@@ -30,14 +31,11 @@ public class Player extends PhysicsActor {
 
     public WeaponType weaponType;
     public Weapon weapon;
-    public Array<Bullet> bullet;
+    public Array<Bullet> bullets;
 
     //Box2d Init
     public World world;
     public Body b2Body;
-    private BodyDef bdef;
-    private CircleShape shape;
-    private PolygonShape polygonShape;
 
     //Textures / anims
     private TextureAtlas playerAndEnemies;
@@ -62,10 +60,11 @@ public class Player extends PhysicsActor {
     private Vector2 position = new Vector2(3, 4);
 
     private float health;
-    public Player(World world, BetaShooter game) {
+    public Player(World world, BetaShooter game, PlayScreen screen) {
         super(world);
         this.world = world;
         this.game = game;
+        this.screen = screen;
         currentState = State.STANDING;
         previousState = State.STANDING;
         stateTimer = 0;
@@ -127,7 +126,7 @@ public class Player extends PhysicsActor {
         //Do the weapon logic
         applyWeaponType(weaponType);
         weaponUnitHolderPosition = weapon.getRightX();
-        bullet = new Array<Bullet>();
+        bullets = new Array<Bullet>();
     }
     public void applyWeaponType(WeaponType weaponType) {
         if (weaponType == WeaponType.SHOTGUN) {
@@ -145,14 +144,21 @@ public class Player extends PhysicsActor {
     }
 
     public void createNewBullet(float x, float y, String direction){
-        bullet.add(new Bullet(game, world, this, weaponType, x, y, direction));
+        bullets.add(new Bullet(game, world, this, weaponType, x, y, direction));
     }
+
+    public Bullet getNewBullet(float x, float y, String direction){
+        //bullets.add(new Bullet(game, world, this, weaponType, x, y, direction));
+        return new Bullet(game, world, this, weaponType, x, y, direction);
+    }
+
+
 
     public void update(float delta){
         setPosition(b2Body.getPosition().x - getWidth() / 2, b2Body.getPosition().y - getHeight() / 2);
         setRegion(getFrame(delta));
-        if( bullet != null) {
-            for (Bullet b: bullet) {
+        if( bullets != null) {
+            for (Bullet b: bullets) {
                 b.update();
             }
         }
@@ -162,8 +168,9 @@ public class Player extends PhysicsActor {
         int avg = (int) (0.32f * health);
         healthBarDraw.getRegion().setRegionWidth(avg);
 
-        if(bullet != null){
-            for (Bullet b: bullet) {
+
+        if(bullets != null){
+            for (Bullet b: bullets) {
                 b.render(batch);
             }
         }
@@ -242,12 +249,19 @@ public class Player extends PhysicsActor {
     }
 
     public void handleCollision(PhysicsActor actor){
+        if(actor instanceof Player){
+            Gdx.app.log(this.getClass().getName(), "Player touched player");
+        }
 
+        if(actor instanceof Bullet){
+            Gdx.app.log(this.getClass().getName(), "Player touched bullets");
+            health -= 10;
+            actor.setBodyAsDestroyable();
+        }
     }
 
     @Override
     public void dispose() {
-        shape.dispose();
         world.dispose();
     }
 

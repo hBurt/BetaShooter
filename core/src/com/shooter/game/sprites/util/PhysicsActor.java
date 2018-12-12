@@ -1,10 +1,12 @@
 package com.shooter.game.sprites.util;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Disposable;
 import com.shooter.game.BetaShooter;
+import com.shooter.game.sprites.Player;
 
 /**
  * Created by: Harrison on 11 Dec 2018
@@ -12,6 +14,8 @@ import com.shooter.game.BetaShooter;
 public class PhysicsActor extends Sprite implements Disposable {
     protected Body b2body;
     protected World world;
+
+    private boolean destroyBody = false;
 
     public PhysicsActor(World world) {
 
@@ -27,9 +31,9 @@ public class PhysicsActor extends Sprite implements Disposable {
     public Body getBulletBody(float x, float y, float radius, String direction){
         createBody(x,y,radius);
         if(direction.matches("left")) {
-            b2body.applyLinearImpulse(new Vector2(-12f, 0), b2body.getWorldCenter(), true);
+            b2body.applyLinearImpulse(new Vector2(-24f, 0), b2body.getWorldCenter(), true);
         } else if(direction.matches("right")){
-            b2body.applyLinearImpulse(new Vector2(12f, 0), b2body.getWorldCenter(), true);
+            b2body.applyLinearImpulse(new Vector2(24f, 0), b2body.getWorldCenter(), true);
         }
         b2body.setGravityScale(0);
         return b2body;
@@ -53,11 +57,21 @@ public class PhysicsActor extends Sprite implements Disposable {
     }
 
     public void handleCollision(PhysicsActor actor){
-
+        if(actor instanceof Player){
+            Gdx.app.log(this.getClass().getName(), "Bullet touched player222");
+        }
     }
 
     @Override
     public void dispose() {
         world.dispose();
+    }
+
+    public boolean isDestroyable() {
+        return destroyBody;
+    }
+
+    public void setBodyAsDestroyable() {
+        this.destroyBody = true;
     }
 }
