@@ -5,6 +5,7 @@ import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -15,6 +16,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.shooter.game.BetaShooter;
+import com.shooter.game.managers.PhysicsEntityManager;
 import com.shooter.game.sprites.Player;
 import com.shooter.game.sprites.util.PhysicsActor;
 import com.shooter.game.tools.B2WorldCreator;
@@ -82,10 +84,10 @@ public class PlayScreen implements Screen {
 
         player = new Player(world, game, this);
 
-        //ray = new RayHandler(world);
+        ray = new RayHandler(world);
 
-        //light = new PointLight(ray, 1000, Color.OLIVE.set(0.09f, 0.145f, 0.145f, 1f), 1000, 1, 2);
-        //light.attachToBody(player.b2Body);
+        light = new PointLight(ray, 1000, Color.OLIVE.set(0.09f, 0.145f, 0.145f, 1f), 1000, 1, 2);
+        light.attachToBody(player.b2Body);
         gameCamera.zoom -= 0.4f;
 
         createContactListener();
@@ -95,6 +97,9 @@ public class PlayScreen implements Screen {
     public void show() {
 
     }
+
+    private boolean fire = false;
+    long endTime = 0;
 
     private void handleInput(float delta){
         if(Gdx.input.isKeyJustPressed(Input.Keys.UP)){  // Move up
@@ -115,7 +120,7 @@ public class PlayScreen implements Screen {
         }
 
         if(Gdx.input.isButtonPressed(Input.Buttons.MIDDLE)){
-            gameCamera.zoom -= 0.01f;
+            gameCamera.zoom += 0.01f;
         }
 
         if(hud.pressLeft){
@@ -131,11 +136,15 @@ public class PlayScreen implements Screen {
                 player.b2Body.applyLinearImpulse(new Vector2(0, 9f), player.b2Body.getWorldCenter(), true);
         }
         if(hud.pressFire){
-            if(!player.isRunningRight()) {
-                player.createNewBullet(player.getPositionCenter().x - 0.6f, player.getPositionCenter().y - 0.2f, "left");
-            } else {
-                player.createNewBullet(player.getPositionCenter().x + 0.6f, player.getPositionCenter().y - 0.2f, "right");
-            }
+
+                    /*if (!player.isRunningRight()) {
+
+                        player.createNewBullet(player.getPositionCenter().x - 0.6f, player.getPositionCenter().y - 0.2f, "left");
+                    } else {
+                        player.createNewBullet(player.getPositionCenter().x + 0.6f, player.getPositionCenter().y - 0.2f, "right");
+                    }*/
+
+
         }
 
 
@@ -154,7 +163,10 @@ public class PlayScreen implements Screen {
             accumulator -= timeStep;
         }
 
+        PhysicsEntityManager.update(world, delta);
+
         player.update(delta);
+
 
         gameCamera.position.x = player.b2Body.getPosition().x;
         gameCamera.position.y = player.b2Body.getPosition().y;
@@ -164,8 +176,6 @@ public class PlayScreen implements Screen {
 
         //Only render what's in the cameras view
         renderer.setView(gameCamera);
-
-        //Update our bullets array
 
     }
 
@@ -188,14 +198,15 @@ public class PlayScreen implements Screen {
         b2dr.render(world, gameCamera.combined);
 
         //Draw the ray
-        //ray.updateAndRender();
-        //ray.setCombinedMatrix(gameCamera.combined);
+        ray.updateAndRender();
+        ray.setCombinedMatrix(gameCamera.combined);
 
         game.getBatch().setProjectionMatrix(gameCamera.combined);
-        player.render(delta, game.getBatch());
+        player.render(game.getBatch());
+        PhysicsEntityManager.draw(game.getBatch());
 
         //update the hud
-        hud.update(player);
+        hud.update(player, delta);
 
         //Set batch to draw what hud camera sees
         game.getBatch().setProjectionMatrix(hud.stage.getCamera().combined);
@@ -203,22 +214,12 @@ public class PlayScreen implements Screen {
         //Draw the hud
         hud.stage.draw();
 
-
-        if(player.bullets != null) {
-            for(int i = 0; i < player.bullets.size; i++){
-                if(player.bullets.get(i).isDestroyable()) {
-                    world.destroyBody(player.bullets.get(i).getBody());
-                    player.bullets.removeIndex(i);
-                }
-            }
-        }
     }
 
     public void createContactListener(){
         world.setContactListener(new ContactListener() {
             @Override
             public void beginContact(Contact contact) {
-                Gdx.app.log(this.getClass().getName(), "Something collided");
                 Fixture fixA = contact.getFixtureA();
                 Fixture fixB = contact.getFixtureB();
 

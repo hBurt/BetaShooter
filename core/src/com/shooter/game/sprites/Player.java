@@ -7,6 +7,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.shooter.game.BetaShooter;
+import com.shooter.game.managers.PhysicsEntityManager;
 import com.shooter.game.screens.PlayScreen;
 import com.shooter.game.sprites.util.Bullet;
 import com.shooter.game.sprites.util.PhysicsActor;
@@ -31,7 +32,6 @@ public class Player extends PhysicsActor {
 
     public WeaponType weaponType;
     public Weapon weapon;
-    public Array<Bullet> bullets;
 
     //Box2d Init
     public World world;
@@ -53,11 +53,6 @@ public class Player extends PhysicsActor {
     private float stateTimer;
 
     private boolean runningRight;
-
-
-
-    //Player Attributes
-    private Vector2 position = new Vector2(3, 4);
 
     private float health;
     public Player(World world, BetaShooter game, PlayScreen screen) {
@@ -126,8 +121,8 @@ public class Player extends PhysicsActor {
         //Do the weapon logic
         applyWeaponType(weaponType);
         weaponUnitHolderPosition = weapon.getRightX();
-        bullets = new Array<Bullet>();
     }
+
     public void applyWeaponType(WeaponType weaponType) {
         if (weaponType == WeaponType.SHOTGUN) {
             weaponTexture = weaponsWithBullets.findRegion("weapon_d-0");
@@ -144,36 +139,18 @@ public class Player extends PhysicsActor {
     }
 
     public void createNewBullet(float x, float y, String direction){
-        bullets.add(new Bullet(game, world, this, weaponType, x, y, direction));
+        PhysicsEntityManager.setToUpdate(new Bullet(game, world, this, weaponType, x, y, direction));
     }
-
-    public Bullet getNewBullet(float x, float y, String direction){
-        //bullets.add(new Bullet(game, world, this, weaponType, x, y, direction));
-        return new Bullet(game, world, this, weaponType, x, y, direction);
-    }
-
-
 
     public void update(float delta){
+
         setPosition(b2Body.getPosition().x - getWidth() / 2, b2Body.getPosition().y - getHeight() / 2);
         setRegion(getFrame(delta));
-        if( bullets != null) {
-            for (Bullet b: bullets) {
-                b.update();
-            }
-        }
     }
 
-    public void render(float delta, SpriteBatch batch){
+    public void render(SpriteBatch batch){
         int avg = (int) (0.32f * health);
         healthBarDraw.getRegion().setRegionWidth(avg);
-
-
-        if(bullets != null){
-            for (Bullet b: bullets) {
-                b.render(batch);
-            }
-        }
         batch.begin();
         draw(batch);
         healthBarDraw.draw(batch,
@@ -255,8 +232,8 @@ public class Player extends PhysicsActor {
 
         if(actor instanceof Bullet){
             Gdx.app.log(this.getClass().getName(), "Player touched bullets");
-            health -= 10;
-            actor.setBodyAsDestroyable();
+            //health -= 10;
+            //PhysicsEntityManager.setToDestroy(actor);
         }
     }
 

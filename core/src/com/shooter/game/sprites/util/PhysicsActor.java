@@ -2,6 +2,7 @@ package com.shooter.game.sprites.util;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Disposable;
@@ -11,7 +12,11 @@ import com.shooter.game.sprites.Player;
 /**
  * Created by: Harrison on 11 Dec 2018
  */
-public class PhysicsActor extends Sprite implements Disposable {
+public abstract class PhysicsActor extends Sprite implements Disposable {
+    public Body getB2body() {
+        return b2body;
+    }
+
     protected Body b2body;
     protected World world;
 
@@ -24,7 +29,6 @@ public class PhysicsActor extends Sprite implements Disposable {
 
     public Body getPlayerBody(float x, float y, float radius){
         createBody(x,y,radius);
-
         return b2body;
     }
 
@@ -56,9 +60,13 @@ public class PhysicsActor extends Sprite implements Disposable {
         return b2body;
     }
 
+    public void render(SpriteBatch batch){
+
+    }
+
     public void handleCollision(PhysicsActor actor){
         if(actor instanceof Player){
-            Gdx.app.log(this.getClass().getName(), "Bullet touched player222");
+            Gdx.app.log(this.getClass().getName(), "Bullet touched player");
         }
     }
 
@@ -67,11 +75,4 @@ public class PhysicsActor extends Sprite implements Disposable {
         world.dispose();
     }
 
-    public boolean isDestroyable() {
-        return destroyBody;
-    }
-
-    public void setBodyAsDestroyable() {
-        this.destroyBody = true;
-    }
 }

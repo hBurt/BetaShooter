@@ -16,6 +16,7 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.shooter.game.BetaShooter;
+import com.shooter.game.managers.ActionManager;
 import com.shooter.game.sprites.Player;
 
 /**
@@ -44,9 +45,13 @@ public class Hud implements Disposable {
     public boolean pressLeft = false;
     public boolean pressRight = false;
     public boolean pressJump = false;
+    private boolean pressFireDown = false;
     public boolean pressFire = false;
 
+    final ActionManager amgr = new ActionManager();
+
     public Hud(SpriteBatch batch, BetaShooter game) {
+
         timeCount = 0;
         bulletCount = 0;
 
@@ -130,18 +135,19 @@ public class Hud implements Disposable {
                 pressJump = false;
             }
         });
+
         buttonFire.addListener(new InputListener(){
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 Gdx.app.log(this.getClass().getName(), "Button press fire");
-                pressFire = true;
+                pressFireDown = true;
                 return true;
             }
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 Gdx.app.log(this.getClass().getName(), "Button press fire released");
-                pressFire = false;
+                pressFireDown = false;
             }
         });
 
@@ -159,17 +165,23 @@ public class Hud implements Disposable {
 
 
     }
-
-    public void update(Player player){
+    public void update(Player player, float delta){
         scoreLBL.setText("FPS: " + Gdx.graphics.getFramesPerSecond() + "\nLRJF: " + pressLeft + pressRight + pressJump + pressFire);
-        if(player.bullets.size > 0){
-            bulletCount = player.bullets.size;
-            positionLBL.setText("X: " + player.b2Body.getPosition().x + " Y: " + player.b2Body.getPosition().y + "\n"
-                + "Bullet Count: " + bulletCount);
-        } else {
-            positionLBL.setText("X: " + player.b2Body.getPosition().x + " Y: " + player.b2Body.getPosition().y + "\n");
-        }
 
+        //Bullet Time Spread
+            amgr.act(delta);
+            if(pressFireDown){
+                if(amgr.isComplete()){
+                    if (!player.isRunningRight()) {
+                        player.createNewBullet(player.getPositionCenter().x - 0.6f, player.getPositionCenter().y - 0.2f, "left");
+                    } else {
+                        player.createNewBullet(player.getPositionCenter().x + 0.6f, player.getPositionCenter().y - 0.2f, "right");
+                    }
+                    amgr.setCount(1);
+                }
+            } else {
+                amgr.setCount(1);
+            }
     }
 
 

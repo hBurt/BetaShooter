@@ -1,11 +1,12 @@
 package com.shooter.game.sprites.util;
 
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
 import com.shooter.game.BetaShooter;
+import com.shooter.game.managers.PhysicsEntityManager;
 import com.shooter.game.sprites.Player;
 import com.shooter.game.sprites.Player.WeaponType;
 
@@ -22,6 +23,16 @@ public class Bullet extends PhysicsActor {
 
     //Box2d Init
     private World world;
+
+    public boolean isOn() {
+        return on;
+    }
+
+    public void setOn(boolean on) {
+        this.on = on;
+    }
+
+    private boolean on = true;
 
 
     public Bullet(BetaShooter game, World world, Player player, WeaponType weaponType, float x, float y, String direction) {
@@ -42,28 +53,25 @@ public class Bullet extends PhysicsActor {
     }
 
 
+    public void update() {
+        //Sets the position of the TextureRegion relative to the bullets body
+        setPosition(b2body.getPosition().x - getWidth() / 2, b2body.getPosition().y - getHeight() / 2);
+    }
+
     public void handleCollision(PhysicsActor actor){
         if(actor instanceof Bullet){
-            setBodyAsDestroyable();
-        }
 
+            //TODO  Game Perriodically crashes
+            Gdx.app.log(this.getClass().getName(), "b | b");
+            PhysicsEntityManager.setToDestroy(actor);
+            Gdx.app.log(this.getClass().getName(), "c | c");
+        }
     }
 
 
     @Override
     public void setPosition(float x, float y) {
         super.setPosition(x, y);
-    }
-
-    public void render(SpriteBatch batch){
-        batch.begin();
-        draw(batch);
-        batch.end();
-    }
-
-    public void update(){
-        //Sets the position of the TextureRegion relative to the bullets body
-        setPosition(b2body.getPosition().x - getWidth() / 2, b2body.getPosition().y - getHeight() / 2);
     }
 
     @Override
@@ -74,4 +82,5 @@ public class Bullet extends PhysicsActor {
     public Body getBody(){
         return this.b2body;
     }
+
 }
