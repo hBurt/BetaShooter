@@ -29,6 +29,7 @@ public class BetaShooter extends AbstractGame {
 		asm.load("ui/ui.atlas", TextureAtlas.class);
 		asm.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
 		asm.load("maps/untitled.tmx", TiledMap.class);
+		asm.load("maps/intro.tmx", TiledMap.class);
 		asm.finishLoading();
 
 		setScreen(new PlayScreen(this));

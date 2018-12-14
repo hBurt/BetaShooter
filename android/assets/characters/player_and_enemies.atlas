@@ -1,6 +1,6 @@
 
 player_and_enemies.png
-size: 200,46
+size: 218,46
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
@@ -104,49 +104,49 @@ ppd-1
   index: -1
 ppd-12
   rotate: false
-  xy: 146, 27
+  xy: 146, 8
   size: 16, 17
   orig: 16, 17
   offset: 0, 0
   index: -1
 ppd-13
   rotate: false
-  xy: 146, 8
+  xy: 162, 27
   size: 16, 17
   orig: 16, 17
   offset: 0, 0
   index: -1
 ppd-14
   rotate: false
-  xy: 164, 27
+  xy: 164, 8
   size: 16, 17
   orig: 16, 17
   offset: 0, 0
   index: -1
 ppd-15
   rotate: false
-  xy: 182, 27
+  xy: 180, 27
   size: 16, 17
   orig: 16, 17
   offset: 0, 0
   index: -1
 ppd-16
   rotate: false
-  xy: 164, 8
+  xy: 182, 8
   size: 16, 17
   orig: 16, 17
   offset: 0, 0
   index: -1
 ppd-17
   rotate: false
-  xy: 182, 8
+  xy: 198, 27
   size: 16, 17
   orig: 16, 17
   offset: 0, 0
   index: -1
 ppd-6
   rotate: false
-  xy: 110, 27
+  xy: 126, 27
   size: 16, 17
   orig: 16, 17
   offset: 0, 0
@@ -160,15 +160,22 @@ ppd-7
   index: -1
 ppd-8
   rotate: false
-  xy: 128, 27
+  xy: 128, 8
   size: 16, 17
   orig: 16, 17
   offset: 0, 0
   index: -1
 ppd-9
   rotate: false
-  xy: 128, 8
+  xy: 144, 27
   size: 16, 17
   orig: 16, 17
+  offset: 0, 0
+  index: -1
+zombie
+  rotate: false
+  xy: 200, 9
+  size: 16, 16
+  orig: 16, 16
   offset: 0, 0
   index: -1

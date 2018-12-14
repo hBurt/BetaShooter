@@ -82,7 +82,7 @@ public class Hud implements Disposable {
         table.row();
         table.add(positionLBL).expandX().padTop(10);
         table.add(scoreLBL).expandX().padTop(10).center();
-        table.debug();
+        //table.debug();
 
         stage.addActor(table);
 
@@ -159,14 +159,14 @@ public class Hud implements Disposable {
         controllLeft.add(buttonFire).padLeft(450);
         controllLeft.add(buttonJump).padLeft(20);
 
-        controllLeft.debug();
+        //controllLeft.debug();
 
         stage.addActor(controllLeft);
 
 
     }
     public void update(Player player, float delta){
-        scoreLBL.setText("FPS: " + Gdx.graphics.getFramesPerSecond() + "\nLRJF: " + pressLeft + pressRight + pressJump + pressFire);
+        scoreLBL.setText("FPS: " + Gdx.graphics.getFramesPerSecond());
 
         //Bullet Time Spread
             amgr.act(delta);
@@ -177,10 +177,10 @@ public class Hud implements Disposable {
                     } else {
                         player.createNewBullet(player.getPositionCenter().x + 0.6f, player.getPositionCenter().y - 0.2f, "right");
                     }
-                    amgr.setCount(1);
+                    amgr.setCount(4);
                 }
             } else {
-                amgr.setCount(1);
+                amgr.setCount(4);
             }
     }
 

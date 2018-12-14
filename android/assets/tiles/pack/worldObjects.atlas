@@ -1,0 +1,62 @@
+
+worldObjects.png
+size: 70,138
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+bars_d-0
+  rotate: false
+  xy: 2, 104
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+bars_d-1
+  rotate: false
+  xy: 2, 70
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+bars_d-2
+  rotate: false
+  xy: 36, 104
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+bars_d-3
+  rotate: false
+  xy: 36, 36
+  size: 31, 32
+  orig: 31, 32
+  offset: 0, 0
+  index: -1
+bars_d-4
+  rotate: false
+  xy: 2, 36
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+bars_d-5
+  rotate: false
+  xy: 36, 70
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+bars_d-6
+  rotate: false
+  xy: 2, 2
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+bars_d-7
+  rotate: false
+  xy: 36, 2
+  size: 31, 32
+  orig: 31, 32
+  offset: 0, 0
+  index: -1

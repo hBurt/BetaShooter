@@ -1,23 +1,26 @@
 package com.shooter.game.screens;
 
 import box2dLight.PointLight;
-import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.maps.MapObject;
+import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.shooter.game.BetaShooter;
 import com.shooter.game.managers.PhysicsEntityManager;
 import com.shooter.game.sprites.Player;
+import com.shooter.game.sprites.enemies.Zombie;
 import com.shooter.game.sprites.util.PhysicsActor;
 import com.shooter.game.tools.B2WorldCreator;
 
@@ -35,24 +38,25 @@ public class PlayScreen implements Screen {
     private Hud hud;
 
     private TiledMap map;
-    private OrthogonalTiledMapRenderer renderer;
 
+    private OrthogonalTiledMapRenderer renderer;
     //Box2d
+
     private World world;
     private Box2DDebugRenderer b2dr;
-    private RayHandler ray;
+    //private RayHandler ray;
     private PointLight light;
-
     private double accumulator;
-    private double currentTime;
 
+    private double currentTime;
     //Box2D constants
+
     private final float timeStep = 1.0f / 60.0f;
     private final int   velocityIterations = 6;
     private final int   positionIterations = 2;
-    private final float gravity = -20f;
-
+    private final float gravity = -32f;
     private Player player;
+    private Array<Vector2> zombieSpawns;
 
     public PlayScreen(BetaShooter game){
         this.game = game;
@@ -67,7 +71,7 @@ public class PlayScreen implements Screen {
         hud = new Hud(game.getBatch(), game);
 
         //Get pre-loaded map from our asset manager
-        map = game.getAsm().get("maps/untitled.tmx", TiledMap.class);
+        map = game.getAsm().get("maps/intro.tmx", TiledMap.class);
 
         //Render the map to the game world
         renderer = new OrthogonalTiledMapRenderer(map, 1 / BetaShooter.PPM);
@@ -82,15 +86,63 @@ public class PlayScreen implements Screen {
 
         new B2WorldCreator(map, world);
 
-        player = new Player(world, game, this);
 
-        ray = new RayHandler(world);
 
-        light = new PointLight(ray, 1000, Color.OLIVE.set(0.09f, 0.145f, 0.145f, 1f), 1000, 1, 2);
-        light.attachToBody(player.b2Body);
+        Vector2 pointPlayer = getMapSpawnPointWithPPM("player");
+
+        player = new Player((int) pointPlayer.x, (int) pointPlayer.y,
+                world, game, this, hud);
+
+        zombieSpawns = getZombieSpawnPoints();
+
+        for (Vector2 point : zombieSpawns){
+            PhysicsEntityManager.setToUpdate(new Zombie((int) point.x, (int) point.y, world, game.getAsm()));
+        }
+
+
+        //ray = new RayHandler(world);
+
+        //light = new PointLight(ray, 1000, Color.OLIVE.set(0.09f, 0.145f, 0.145f, 1f), 1000, 1, 2);
+        //light.attachToBody(player.b2Body);
         gameCamera.zoom -= 0.4f;
 
         createContactListener();
+    }
+
+    //Get all the zombie spawn points as a vector from the map
+    private Array<Vector2> getZombieSpawnPoints(){
+        //Initiate new vector array to hold results
+        Array<Vector2> vector2Array = new Array<Vector2>();
+
+        //Loop through each map object
+        for(MapObject mo : getSpawnPoints()){
+
+            //If the map object is not null && the name == zombie || zombie1
+            if(mo != null && (mo.getName().matches("zombie") || mo.getName().matches("zombie1")) ) {
+                //System.out.println( mo.getProperties().get("name").toString() );
+                int spawnOriginX = (int) Double.parseDouble(mo.getProperties().get("x").toString());
+                int spawnOriginY = (int) Double.parseDouble(mo.getProperties().get("y").toString());
+
+                vector2Array.add(new Vector2((int) (spawnOriginX / BetaShooter.PPM), (int) (spawnOriginY / BetaShooter.PPM)));
+                System.out.println("Spawn here");
+
+            }
+        }
+        return vector2Array;
+    }
+
+    //
+    private Vector2 getMapSpawnPointWithPPM(String spawnPoint){
+        MapObject mapSpawnPoint = getSpawnPoints().get(spawnPoint);
+        int spawnOriginX = (int) Double.parseDouble(mapSpawnPoint.getProperties().get("x").toString());
+        int spawnOriginY = (int) Double.parseDouble(mapSpawnPoint.getProperties().get("y").toString());
+
+        return new Vector2((int) (spawnOriginX / BetaShooter.PPM), (int) (spawnOriginY / BetaShooter.PPM));
+    }
+
+    //Return all objects from object layer 'spawns'
+    private MapObjects getSpawnPoints(){
+        return map.getLayers().get("spawns").getObjects();
     }
 
     @Override
@@ -98,18 +150,21 @@ public class PlayScreen implements Screen {
 
     }
 
-    private boolean fire = false;
-    long endTime = 0;
-
     private void handleInput(float delta){
-        if(Gdx.input.isKeyJustPressed(Input.Keys.UP)){  // Move up
-           player.b2Body.applyLinearImpulse(new Vector2(0, 9f), player.b2Body.getWorldCenter(), true);
+        if(Gdx.input.isKeyPressed(Input.Keys.LEFT)){
+            handleMoveLeft();
+        } else if(hud.pressLeft){
+            handleMoveLeft();
         }
-        if(Gdx.input.isKeyPressed(Input.Keys.LEFT) && player.b2Body.getLinearVelocity().x >= -9) {  // Move up
-            player.b2Body.applyLinearImpulse(new Vector2(-0.9f, 0), player.b2Body.getWorldCenter(), true);
+        if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)){
+            handleMoveRight();
+        } else if(hud.pressRight){
+            handleMoveRight();
         }
-        if(Gdx.input.isKeyPressed(Input.Keys.RIGHT) && player.b2Body.getLinearVelocity().x <= 9){  // Move up
-            player.b2Body.applyLinearImpulse(new Vector2(0.9f, 0), player.b2Body.getWorldCenter(), true);
+        if(Gdx.input.isKeyPressed(Input.Keys.UP)){
+            handleMoveUp();
+        } else if (hud.pressJump) {
+            handleMoveUp();
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)){
             if(!player.isRunningRight()) {
@@ -118,36 +173,47 @@ public class PlayScreen implements Screen {
                 player.createNewBullet(player.getPositionCenter().x +  0.6f, player.getPositionCenter().y - 0.2f, "right");
             }
         }
+        if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)){
+            Gdx.app.log(this.getClass().getName(), "pressed 1: Weapon change to SHOTGUN" );
+            player.applyWeaponType(Player.WeaponType.SHOTGUN);
+        }
+        if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)){
+            Gdx.app.log(this.getClass().getName(), "pressed 2: Weapon change to ASSULT_RIFLE");
+            player.applyWeaponType(Player.WeaponType.ASSULT_RIFLE);
+        }
+        if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)){
+            Gdx.app.log(this.getClass().getName(), "pressed 3: Weapon change to SNIPER");
+            player.applyWeaponType(Player.WeaponType.SNIPER);
+        }
 
         if(Gdx.input.isButtonPressed(Input.Buttons.MIDDLE)){
-            gameCamera.zoom += 0.01f;
+            gameCamera.zoom -= 0.01f;
         }
+    }
 
-        if(hud.pressLeft){
-            if (player.b2Body.getLinearVelocity().x >= -9f)
+    private void handleMoveLeft(){
+        if(player.b2Body.getLinearVelocity().x >= -6) {  // Move left
+            if(player.b2Body.getLinearVelocity().x > 0){
+                player.b2Body.setLinearVelocity(0, player.b2Body.getLinearVelocity().y);
+            } else {
                 player.b2Body.applyLinearImpulse(new Vector2(-0.9f, 0), player.b2Body.getWorldCenter(), true);
+            }
+
         }
-        if(hud.pressRight){
-            if (player.b2Body.getLinearVelocity().x <= 9f)
+    }
+    private void handleMoveRight(){
+        if(player.b2Body.getLinearVelocity().x <= 6){  // Move right
+            if(player.b2Body.getLinearVelocity().x < 0){
+                player.b2Body.setLinearVelocity(0, player.b2Body.getLinearVelocity().y);
+            } else {
                 player.b2Body.applyLinearImpulse(new Vector2(0.9f, 0), player.b2Body.getWorldCenter(), true);
+            }
         }
-        if (hud.pressJump) { //up
-            if (player.b2Body.getLinearVelocity().y <= 9)
-                player.b2Body.applyLinearImpulse(new Vector2(0, 9f), player.b2Body.getWorldCenter(), true);
+    }
+    private void handleMoveUp(){
+        if(player.isGrounded()) {
+            player.b2Body.applyLinearImpulse(new Vector2(0, 8f), player.b2Body.getWorldCenter(), true);
         }
-        if(hud.pressFire){
-
-                    /*if (!player.isRunningRight()) {
-
-                        player.createNewBullet(player.getPositionCenter().x - 0.6f, player.getPositionCenter().y - 0.2f, "left");
-                    } else {
-                        player.createNewBullet(player.getPositionCenter().x + 0.6f, player.getPositionCenter().y - 0.2f, "right");
-                    }*/
-
-
-        }
-
-
     }
 
     public void update(float delta){
@@ -163,11 +229,15 @@ public class PlayScreen implements Screen {
             accumulator -= timeStep;
         }
 
+
+        //Update the PEM
         PhysicsEntityManager.update(world, delta);
 
+        //Set play texture to player position &&
+        //update the region to the proper Texture Region based on the statetimer
         player.update(delta);
 
-
+        //Set camera x & y position to player position
         gameCamera.position.x = player.b2Body.getPosition().x;
         gameCamera.position.y = player.b2Body.getPosition().y;
 
@@ -198,11 +268,16 @@ public class PlayScreen implements Screen {
         b2dr.render(world, gameCamera.combined);
 
         //Draw the ray
-        ray.updateAndRender();
-        ray.setCombinedMatrix(gameCamera.combined);
+        //ray.updateAndRender();
+        //ray.setCombinedMatrix(gameCamera.combined);
 
+        //Set the batch projection matrix to our game camera
         game.getBatch().setProjectionMatrix(gameCamera.combined);
+
+        //Draw the player
         player.render(game.getBatch());
+
+        //Draw all entities to the game world
         PhysicsEntityManager.draw(game.getBatch());
 
         //update the hud
@@ -216,26 +291,42 @@ public class PlayScreen implements Screen {
 
     }
 
+    private void handleColision(Contact contact, boolean begin){
+
+        //Get the two fixture that are colliding
+        Fixture fixA = contact.getFixtureA();
+        Fixture fixB = contact.getFixtureB();
+
+        //Create a PhysicsActor from each fixtures user data
+        PhysicsActor actorA = (PhysicsActor) fixA.getBody().getUserData();
+        PhysicsActor actorB = (PhysicsActor) fixB.getBody().getUserData();
+
+        //Check to make sure both fixtures are not null
+        if(actorA != null && actorB != null){
+            //Check if the contact is started or ended
+            if(begin) { //Start contact
+                actorA.handleCollision(actorB);
+                actorB.handleCollision(actorA);
+            } else {    //End contact
+                actorA.handleUnCollide(actorB);
+                actorB.handleUnCollide(actorA);
+            }
+        }
+    }
+
+
+    //Handle world collision
     public void createContactListener(){
         world.setContactListener(new ContactListener() {
             @Override
             public void beginContact(Contact contact) {
-                Fixture fixA = contact.getFixtureA();
-                Fixture fixB = contact.getFixtureB();
-
-                PhysicsActor actorA = (PhysicsActor) fixA.getBody().getUserData();
-                PhysicsActor actorB = (PhysicsActor) fixB.getBody().getUserData();
-
-                if(actorA != null && actorB != null) {
-                    actorA.handleCollision(actorB);
-                    actorB.handleCollision(actorA);
-                }
+                handleColision(contact, true);
 
             }
 
             @Override
             public void endContact(Contact contact) {
-
+                handleColision(contact, false);
             }
 
             @Override
@@ -279,5 +370,9 @@ public class PlayScreen implements Screen {
         b2dr.dispose();
         hud.dispose();
         player.dispose();
+    }
+
+    public TiledMap getMap() {
+        return map;
     }
 }

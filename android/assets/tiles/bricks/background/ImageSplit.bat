@@ -1,0 +1,1 @@
+magick convert +repage world.png -crop 32x32 bars_%d.png

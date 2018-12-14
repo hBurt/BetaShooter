@@ -1,103 +1,159 @@
 
 bricks.png
-size: 68,272
+size: 1024,64
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
+2tile_d-0
+  rotate: false
+  xy: 307, 1
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+2tile_d-1
+  rotate: false
+  xy: 341, 1
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+2tile_d-2
+  rotate: false
+  xy: 375, 1
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+2tile_d-3
+  rotate: false
+  xy: 409, 1
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+door_d-0
+  rotate: false
+  xy: 69, 1
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+door_d-1
+  rotate: false
+  xy: 1, 1
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+door_d-2
+  rotate: false
+  xy: 35, 1
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+door_d-3
+  rotate: false
+  xy: 273, 1
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
 tile_d-0
   rotate: false
-  xy: 1, 137
+  xy: 443, 1
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 tile_d-1
   rotate: false
-  xy: 35, 171
+  xy: 477, 1
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 tile_d-10
   rotate: false
-  xy: 1, 239
+  xy: 103, 1
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 tile_d-11
   rotate: false
-  xy: 1, 205
+  xy: 137, 1
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 tile_d-12
   rotate: false
-  xy: 35, 239
+  xy: 171, 1
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 tile_d-13
   rotate: false
-  xy: 1, 171
+  xy: 205, 1
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 tile_d-14
   rotate: false
-  xy: 35, 205
+  xy: 239, 1
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 tile_d-2
   rotate: false
-  xy: 1, 103
+  xy: 511, 1
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 tile_d-3
   rotate: false
-  xy: 35, 137
+  xy: 545, 1
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 tile_d-5
   rotate: false
-  xy: 1, 69
+  xy: 579, 1
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 tile_d-6
   rotate: false
-  xy: 35, 103
+  xy: 613, 1
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 tile_d-7
   rotate: false
-  xy: 1, 35
+  xy: 647, 1
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 tile_d-8
   rotate: false
-  xy: 35, 69
+  xy: 681, 1
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 tile_d-9
   rotate: false
-  xy: 1, 1
+  xy: 715, 1
   size: 32, 32
   orig: 32, 32
   offset: 0, 0

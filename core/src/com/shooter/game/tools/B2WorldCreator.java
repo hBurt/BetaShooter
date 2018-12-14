@@ -13,7 +13,7 @@ import com.shooter.game.sprites.Brick;
 public class B2WorldCreator {
     public B2WorldCreator(TiledMap map, World world) {
         //Ground objects
-        for(MapObject object : map.getLayers().get(2).getObjects().getByType(RectangleMapObject.class)){
+        for(MapObject object : map.getLayers().get("walls").getObjects().getByType(RectangleMapObject.class)){
             Rectangle rect = ((RectangleMapObject) object).getRectangle();
             new Brick(world, map, rect);
         }

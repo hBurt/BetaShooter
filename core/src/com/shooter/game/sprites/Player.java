@@ -8,10 +8,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.shooter.game.BetaShooter;
 import com.shooter.game.managers.PhysicsEntityManager;
+import com.shooter.game.screens.Hud;
 import com.shooter.game.screens.PlayScreen;
-import com.shooter.game.sprites.util.Bullet;
-import com.shooter.game.sprites.util.PhysicsActor;
-import com.shooter.game.sprites.util.Weapon;
+import com.shooter.game.sprites.util.*;
 
 /**
  * Created by: Harrison on 08 Dec 2018
@@ -21,6 +20,7 @@ public class Player extends PhysicsActor {
     //Instance of our game
     private BetaShooter game;
     private PlayScreen screen;
+    private Hud hud;
 
     //Create the states for out players animation
     public enum State { FALLING, JUMPING, STANDING, RUNNING }
@@ -54,16 +54,22 @@ public class Player extends PhysicsActor {
 
     private boolean runningRight;
 
+    private boolean isGrounded;
+
     private float health;
-    public Player(World world, BetaShooter game, PlayScreen screen) {
+    RectangleMapObjectFactory factory;
+
+    public Player(int x, int y, World world, BetaShooter game, PlayScreen screen, Hud hud) {
         super(world);
         this.world = world;
         this.game = game;
         this.screen = screen;
+        this.hud = hud;
         currentState = State.STANDING;
         previousState = State.STANDING;
         stateTimer = 0;
         runningRight = true;
+
 
         /********Player Animation********/
         //Retrieve the player and enemy atlas
@@ -86,7 +92,6 @@ public class Player extends PhysicsActor {
         frames.clear();
 
         //Add our run frames to the animation
-        frames.add(playerAndEnemies.findRegion("ppd-6"));
         frames.add(playerAndEnemies.findRegion("ppd-7"));
 
         //Set the run animation the frames from our array
@@ -98,12 +103,18 @@ public class Player extends PhysicsActor {
         playerStand = playerAndEnemies.findRegion("ppd-0");
         /******End Player Animation*******/
 
-        getPlayerBody(3, 4, 15);
+        /******Set player starting position******/
+        getPlayerBody(x, y, 15);   //3, 10
+        /****************************************/
+
         b2Body = super.b2body;
         b2Body.setUserData(this);
 
         setBounds(0,0,32 / BetaShooter.PPM, 32 / BetaShooter.PPM);
         setRegion(playerStand);
+
+        //Setup world sensors
+        factory = new RectangleMapObjectFactory(world, screen.getMap());
 
         //Health Bar
         healthBarDraw = new TextureRegionDrawable(playerAndEnemies.findRegion("healthBar"));
@@ -122,7 +133,6 @@ public class Player extends PhysicsActor {
         applyWeaponType(weaponType);
         weaponUnitHolderPosition = weapon.getRightX();
     }
-
     public void applyWeaponType(WeaponType weaponType) {
         if (weaponType == WeaponType.SHOTGUN) {
             weaponTexture = weaponsWithBullets.findRegion("weapon_d-0");
@@ -139,11 +149,10 @@ public class Player extends PhysicsActor {
     }
 
     public void createNewBullet(float x, float y, String direction){
-        PhysicsEntityManager.setToUpdate(new Bullet(game, world, this, weaponType, x, y, direction));
+        PhysicsEntityManager.setToUpdate(new Bullet(game, world, this, weaponType, x, y, direction, screen.getMap()));
     }
 
     public void update(float delta){
-
         setPosition(b2Body.getPosition().x - getWidth() / 2, b2Body.getPosition().y - getHeight() / 2);
         setRegion(getFrame(delta));
     }
@@ -233,7 +242,10 @@ public class Player extends PhysicsActor {
         if(actor instanceof Bullet){
             Gdx.app.log(this.getClass().getName(), "Player touched bullets");
             //health -= 10;
-            //PhysicsEntityManager.setToDestroy(actor);
+            PhysicsEntityManager.setToDestroy(actor);
+        }
+        if(actor instanceof RectangleMapObject){
+
         }
     }
 
@@ -249,5 +261,13 @@ public class Player extends PhysicsActor {
 
     public boolean isRunningRight() {
         return runningRight;
+    }
+
+    public boolean isGrounded() {
+        return isGrounded;
+    }
+
+    public void setGrounded(boolean grounded) {
+        isGrounded = grounded;
     }
 }
