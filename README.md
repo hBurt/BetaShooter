@@ -1,2 +1,2 @@
 # BetaShooter
-![game](https://i.imgur.com/yHN0rHW.png)
+![game](https://i.imgur.com/QfIjyWt.png)
