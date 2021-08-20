@@ -168,6 +168,7 @@ public class Hud implements Disposable {
     public void update(Player player, float delta){
         scoreLBL.setText("FPS: " + Gdx.graphics.getFramesPerSecond());
 
+        positionLBL.setText("X: " + String.format(java.util.Locale.US,"%.3f", player.getX()) +", Y: " + String.format(java.util.Locale.US,"%.3f", player.getY()));
         //Bullet Time Spread
             amgr.act(delta);
             if(pressFireDown){
